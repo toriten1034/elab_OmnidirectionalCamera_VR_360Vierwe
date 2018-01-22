@@ -2,6 +2,7 @@ package com.example.elab.opencv_test;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -15,10 +16,13 @@ import org.opencv.core.Scalar;
 public class MainActivity extends AppCompatActivity {
 
     private ImageView mImageView = null;
+    private Handler _handler = new Handler();
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
+
     }
+    public native int ConvertNative(long matAddrRgba, long matAddrGray);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +35,13 @@ public class MainActivity extends AppCompatActivity {
         Mat img1 = new Mat();
         Mat img2 = new Mat();
         Utils.bitmapToMat(bmp1,img1);
-        Core.absdiff(img1,new Scalar(255,255,255),img2);
+        ConvertNative(img1.getNativeObjAddr(),img2.getNativeObjAddr());
+   //     Core.absdiff(img1, new Scalar(255, 255, 255), img2); // ネガポジ変換
         Utils.matToBitmap(img2,bmp1);
         mImageView.setImageBitmap(bmp1);
         tv.setText("test");
     }
+
 
     /**
      * A native method that is implemented by the 'native-lib' native library,
